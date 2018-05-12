@@ -30,12 +30,20 @@ contract Faucet is Ownable {
     uint256 constant oneKAVO = 1000000000000000000000;
     uint256 constant twoKAVO = 2000000000000000000000;
     uint256 constant fiveKAVO = 5000000000000000000000;
+    uint256 constant oneHours = 1 hours;
+    uint256 constant twoHours = 2 hours;
+    uint256 constant fiveHours = 5 hours;
 
     /*
     * Storage
     */
     AvocadoToken public avoInstance;
     bool public faucetStatus;
+    struct addressStatus {
+        uint256 timeLock;
+        bool locked;
+    }
+    mapping(address => addressStatus) status;
 
     /*
     * Modifiers
@@ -74,32 +82,47 @@ contract Faucet is Ownable {
         }
     }
 
-    /// @dev send 1000 AVO
+    /// @dev send 1000 AVO with a minimum time lock of 1 hour
     function drip1000AVO()
       public
       faucetOn()
     {
+        checkStatus(msg.sender);
+        if(status[msg.sender].locked) {
+            revert();
+        }
         avoInstance.transfer(msg.sender, oneKAVO);
+        updateStatus(msg.sender, oneHours);
 
         emit OneKAVOSent(msg.sender);
     }
 
-    /// @dev send 2000 AVO
+    /// @dev send 2000 AVO with a minimum time lock of 2 hours
     function drip2000AVO()
       public
       faucetOn()
     {
+        checkStatus(msg.sender);
+        if(status[msg.sender].locked) {
+            revert();
+        }
         avoInstance.transfer(msg.sender, twoKAVO);
+        updateStatus(msg.sender, twoHours);
 
         emit TwoKAVOSent(msg.sender);
     }
 
-    /// @dev send 5000 AVO
+    /// @dev send 5000 AVO with a minimum time lock of 5 hours
     function drip5000AVO()
       public
       faucetOn()
     {
+        checkStatus(msg.sender);
+        if(status[msg.sender].locked) {
+            revert();
+        }
         avoInstance.transfer(msg.sender, fiveKAVO);
+        updateStatus(msg.sender, fiveHours);
 
         emit FiveKAVOSent(msg.sender);
     }
@@ -124,6 +147,39 @@ contract Faucet is Ownable {
         faucetStatus = false;
 
         emit FaucetOff(faucetStatus);
+    }
+
+    /*
+    * Internal functions
+    */
+    /// @dev locks and unlocks account based on time range
+    /// @param _address of msg.sender
+    function checkStatus(address _address)
+      internal
+    {
+        //check if first time address is requesting
+        if(status[_address].timeLock == 0) {
+            status[_address].locked = false;
+        }
+        //if not first time check the timeLock
+        else {
+            // solium-disable-next-line security/no-block-members
+            if(block.timestamp >= status[_address].timeLock) {
+                status[_address].locked = false;
+            }
+            else {
+                status[_address].locked = true;
+            }
+        }
+    }
+
+    /// @dev updates timeLock for account
+    /// @param _address of msg.sender
+    /// @param _timelock of sender address
+    function updateStatus(address _address, uint256 _timelock)
+      internal
+    {   // solium-disable-next-line security/no-block-members
+        status[_address].timeLock = block.timestamp + _timelock;
     }
 
 }
