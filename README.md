@@ -33,3 +33,5 @@ To test:
 ```
 truffle(develop)> test
 ```
+## License
+[MIT](./LICENSE.md)
