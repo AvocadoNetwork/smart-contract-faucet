@@ -1,6 +1,6 @@
 {
-  "name": "smart-contract-faucet",
-  "version": "1.0.0",
+  "name": "avo-token-faucet",
+  "version": "1.0.1",
   "description": "faucet contract for Avocado Network",
   "main": "truffle.js",
   "directories": {
@@ -45,5 +45,10 @@
     "ganache-cli": "^6.1.0",
     "solidity-coverage": "^0.5.0",
     "solium": "^1.1.7"
+  },
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "ethereumjs-wallet": "^0.6.0",
+    "truffle-wallet-provider": "0.0.5"
   }
 }

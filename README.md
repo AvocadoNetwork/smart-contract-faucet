@@ -10,6 +10,10 @@
 ## AVO Faucet
 Smart contract faucet for [Avocado Network](https://github.com/AvocadoNetwork).
 
+Rinkeby Instance [here](https://rinkeby.etherscan.io/address/0x25cfe00c37bb089ceb87ee2d6665ac2a39168979).
+
+Gist available [here](https://gist.github.com/NFhbar/e1e248fc96aa5c41033c42150c6d7361).
+
 The Faucet contract allows senders to send and receive [AVO tokens](https://rinkeby.etherscan.io/address/0x0c8184c21a51cdb7df9e5dc415a6a54b3a39c991).
 
 The ```constructor``` sets the initial token instance and turns the faucet on:
@@ -93,6 +97,13 @@ function updateStatus(address _address, uint256 _timelock)
 ```
 
 ## Install
+### ethpm
+Install as [ethpm](https://www.ethpm.com/registry/packages/48):
+```
+$ truffle install avo-token-faucet@1.0.1
+```
+
+### Clone
 Clone repo:
 ```
 git clone git@github.com:NFhbar/smart-contract-faucet.git
