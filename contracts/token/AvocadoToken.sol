@@ -6,7 +6,6 @@ import "./BurnableToken.sol";
  * @title AvocadoToken
  * @dev Mintable and Burnable erc20 token
  * https://github.com/AvocadoNetwork
- *@author Nicolas Frega - <https://github.com/NFhbar>
  */
 
 
