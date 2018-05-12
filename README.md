@@ -108,6 +108,16 @@ Clone repo:
 ```
 git clone git@github.com:NFhbar/smart-contract-faucet.git
 ```
+Create a new ```.env``` file in root directory and add your private key:
+```
+RINKEBY_PRIVATE_KEY="MyPrivateKeyHere..."
+ROPSTEN_PRIVATE_KEY="MyPrivateKeyHere..."
+```
+If you don't have a private key, you can use one provided by Ganache (for development only!):
+```
+RINKEBY_PRIVATE_KEY="c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3"
+ROPSTEN_PRIVATE_KEY="c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3"
+```
 then:
 ```
 npm install
