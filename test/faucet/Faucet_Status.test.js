@@ -8,9 +8,11 @@ contract('Faucet Contract - Faucet Status', accounts => {
     let faucet
     let AVO
     let confirm
+    let faucet_balance
     let eventEmitted
     const owner = accounts[1]
     const nonOwner = accounts[0]
+    const amount = 3000000000000000000000
 
     beforeEach(async () => {
         AVO = await token.new({from: accounts[1]})
@@ -26,12 +28,24 @@ contract('Faucet Contract - Faucet Status', accounts => {
         //Check event was emitted
         eventEmitted = utils.getParamFromTxEvent(confirm, 'status', null, 'FaucetOff')
         assert.equal(eventEmitted, false)
+        //cannot drip if faucet is off
+        //Donor sends AVO to faucet
+        await AVO.transfer(faucet.address, amount, { from: accounts[1] })
+        faucet_balance = await AVO.balanceOf.call(faucet.address, { from: accounts[0] })
+        assert.equal(faucet_balance.toNumber(), amount)
+        await assertRevert(faucet.drip1000AVO({from: accounts[0]}))
+        //cannot turn faucet off again
+        await assertRevert(faucet.turnFaucetOff({from: owner}))
+
         //turn faucet on
         confirm = await faucet.turnFaucetOn({from: owner})
         assert.equal(await faucet.faucetStatus.call({from: owner}), true)
         //Check event was emitted
         eventEmitted = utils.getParamFromTxEvent(confirm, 'status', null, 'FaucetOn')
         assert.equal(eventEmitted, true)
+        //cannot turn faucet on again
+        await assertRevert(faucet.turnFaucetOn({from: owner}))
+
     })
 
     it('Non owner cannot turn faucet off/on', async () => {

@@ -3,6 +3,7 @@
 <div>
 
 [![Build Status](https://travis-ci.org/NFhbar/smart-contract-faucet.svg?branch=master)](https://travis-ci.org/NFhbar/smart-contract-faucet)
+[![Coverage Status](https://coveralls.io/repos/github/NFhbar/smart-contract-faucet/badge.svg?branch=master)](https://coveralls.io/github/NFhbar/smart-contract-faucet?branch=master)
 
 </div>
 
@@ -23,14 +24,14 @@ constructor(address _avoInstance)
 }
 ```
 
-The Faucet can be turned on and off only by the ```owner``` of the contract as set by [Ownable.sol](./contracts/ownership/Ownable.sol).
+The Faucet can only be turned on and off by the ```owner``` of the contract as set by [Ownable.sol](./contracts/ownership/Ownable.sol).
 
 ### Drip AVO
 The Faucet has 3 methods for dripping 1000, 2000, or 5000 AVO tokens to senders:
 ```javascript
-function drip1000AVO()...
-function drip2000AVO()...
-function drip5000AVO()...
+function drip1000AVO()
+function drip2000AVO()
+function drip5000AVO()
 ```
 The time lock period for each function is 1 hour, 2 hours, and 5 hours respectively.
 
@@ -50,7 +51,7 @@ function drip1000AVO()
     emit OneKAVOSent(msg.sender);
 }
 ```
-First the function required the faucet is turned on. Then the status of the sender is checked for lock or unlocked depending on their previous state:
+First the function requires the faucet is turned on. Then the status of the sender is checked for lock or unlocked depending on their previous state:
 ```javascript
 function checkStatus(address _address)
   internal

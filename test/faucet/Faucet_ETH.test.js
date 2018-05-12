@@ -24,6 +24,13 @@ contract('Faucet Contract - Receives ETH', accounts => {
             gas: gas
         })
         assert.equal(web3.eth.getBalance(faucet.address),value)
+        //fails to send 0 ETH
+        await web3.eth.sendTransaction({
+            from: accounts[0],
+            to: faucet.address,
+            value: 0,
+            gas: 1000000
+        })
     })
 
 })
