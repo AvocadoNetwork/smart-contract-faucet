@@ -1,6 +1,6 @@
 {
   "package_name": "avo-token-faucet",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Avocado Network AVO faucet",
   "authors": [
     "Nicolas Frega <https://github.com/NFhbar>"
@@ -8,7 +8,8 @@
   "keywords": [
     "AvocadoNetwork",
     "AVO",
-    "faucet"
+    "faucet",
+    "ERC20Basic"
   ],
   "dependencies": {},
   "license": "MIT"

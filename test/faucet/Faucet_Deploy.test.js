@@ -10,7 +10,7 @@ contract('Faucet Contract - Deploys Correctly', accounts => {
     beforeEach(async () => {
         AVO = await token.new({from: accounts[1]})
         assert.ok(AVO)
-        faucet = await Faucet.new(AVO.address, {from: accounts[1]})
+        faucet = await Faucet.new(AVO.address, faucet_name, {from: accounts[1]})
         assert.ok(faucet)
     })
 
@@ -24,7 +24,7 @@ contract('Faucet Contract - Deploys Correctly', accounts => {
     })
 
     it('Correctly sets Faucet AVO token address', async () => {
-        assert.equal(await faucet.avoInstance.call({from: accounts[0]}), AVO.address)
+        assert.equal(await faucet.tokenInstance.call({from: accounts[0]}), AVO.address)
     })
 
     it('Correctly sets Faucet status to true after contract instance', async () => {

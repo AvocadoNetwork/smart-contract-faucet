@@ -5,12 +5,13 @@ contract('Faucet Contract - Receives AVO', accounts => {
     // variables
     let faucet
     let AVO
+    const faucetName = 'AVOFaucet'
     const balance = 1000000000000000000000
 
     beforeEach(async () => {
         AVO = await token.new({from: accounts[1]})
         assert.ok(AVO)
-        faucet = await Faucet.new(AVO.address, {from: accounts[1]})
+        faucet = await Faucet.new(AVO.address, faucetName, {from: accounts[1]})
         assert.ok(faucet)
     })
 

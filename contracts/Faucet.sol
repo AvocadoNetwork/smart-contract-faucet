@@ -1,14 +1,14 @@
 pragma solidity ^0.4.23;
 
 /**
- * @title Faucet
+ * @title Faucet v2.0.0
  * Faucet smart contract for Avocado Network
- * allows users to receive AVO
+ * allows users to receive erc20Basic tokens
  * https://github.com/AvocadoNetwork
  * @author Nicolas Frega - <https://github.com/NFhbar>
  */
 
-import "./token/AvocadoToken.sol";
+import "./token/ERC20Basic.sol";
 import "./ownership/Ownable.sol";
 
 contract Faucet is Ownable {
@@ -17,19 +17,18 @@ contract Faucet is Ownable {
     * Events
     */
     event Deposit(address indexed sender, uint256 value);
-    event OneKAVOSent(address receiver);
-    event TwoKAVOSent(address receiver);
-    event FiveKAVOSent(address receiver);
+    event OneKTokenSent(address receiver);
+    event TwoKTokenSent(address receiver);
+    event FiveKTokenSent(address receiver);
     event FaucetOn(bool status);
     event FaucetOff(bool status);
 
     /*
     * Constants
     */
-    string public constant faucetName = "AVOFaucet";
-    uint256 constant oneKAVO = 1000000000000000000000;
-    uint256 constant twoKAVO = 2000000000000000000000;
-    uint256 constant fiveKAVO = 5000000000000000000000;
+    uint256 constant oneKToken = 1000000000000000000000;
+    uint256 constant twoKToken = 2000000000000000000000;
+    uint256 constant fiveKToken = 5000000000000000000000;
     uint256 constant oneHours = 1 hours;
     uint256 constant twoHours = 2 hours;
     uint256 constant fiveHours = 5 hours;
@@ -37,13 +36,10 @@ contract Faucet is Ownable {
     /*
     * Storage
     */
-    AvocadoToken public avoInstance;
+    string public faucetName;
+    ERC20Basic public tokenInstance;
     bool public faucetStatus;
-    struct addressStatus {
-        uint256 timeLock;
-        bool locked;
-    }
-    mapping(address => addressStatus) status;
+    mapping(address => uint256) status;
 
     /*
     * Modifiers
@@ -62,11 +58,13 @@ contract Faucet is Ownable {
      * Public functions
      */
     /// @dev Contract constructor
-    /// @param _avoInstance address of AVO token
-    constructor(address _avoInstance)
+    /// @param _tokenInstance address of ERC20Basic token
+    /// @param _faucetName sets the name for the faucet
+    constructor(address _tokenInstance, string _faucetName)
       public
     {
-        avoInstance = AvocadoToken(_avoInstance);
+        tokenInstance = ERC20Basic(_tokenInstance);
+        faucetName = _faucetName;
         faucetStatus = true;
 
         emit FaucetOn(faucetStatus);
@@ -82,49 +80,46 @@ contract Faucet is Ownable {
         }
     }
 
-    /// @dev send 1000 AVO with a minimum time lock of 1 hour
-    function drip1000AVO()
+    /// @dev send 1000 Token with a minimum time lock of 1 hour
+    function drip1000Token()
       public
       faucetOn()
     {
-        checkStatus(msg.sender);
-        if(status[msg.sender].locked) {
+        if(checkStatus(msg.sender)) {
             revert();
         }
-        avoInstance.transfer(msg.sender, oneKAVO);
+        tokenInstance.transfer(msg.sender, oneKToken);
         updateStatus(msg.sender, oneHours);
 
-        emit OneKAVOSent(msg.sender);
+        emit OneKTokenSent(msg.sender);
     }
 
-    /// @dev send 2000 AVO with a minimum time lock of 2 hours
-    function drip2000AVO()
+    /// @dev send 2000 Token with a minimum time lock of 2 hours
+    function drip2000Token()
       public
       faucetOn()
     {
-        checkStatus(msg.sender);
-        if(status[msg.sender].locked) {
+        if(checkStatus(msg.sender)) {
             revert();
         }
-        avoInstance.transfer(msg.sender, twoKAVO);
+        tokenInstance.transfer(msg.sender, twoKToken);
         updateStatus(msg.sender, twoHours);
 
-        emit TwoKAVOSent(msg.sender);
+        emit TwoKTokenSent(msg.sender);
     }
 
-    /// @dev send 5000 AVO with a minimum time lock of 5 hours
-    function drip5000AVO()
+    /// @dev send 5000 Token with a minimum time lock of 5 hours
+    function drip5000Token()
       public
       faucetOn()
     {
-        checkStatus(msg.sender);
-        if(status[msg.sender].locked) {
+        if(checkStatus(msg.sender)) {
             revert();
         }
-        avoInstance.transfer(msg.sender, fiveKAVO);
+        tokenInstance.transfer(msg.sender, fiveKToken);
         updateStatus(msg.sender, fiveHours);
 
-        emit FiveKAVOSent(msg.sender);
+        emit FiveKTokenSent(msg.sender);
     }
 
     /// @dev turn faucet on
@@ -154,21 +149,24 @@ contract Faucet is Ownable {
     */
     /// @dev locks and unlocks account based on time range
     /// @param _address of msg.sender
+    /// @return bool of current lock status of address
     function checkStatus(address _address)
       internal
+      view
+      returns (bool)
     {
         //check if first time address is requesting
-        if(status[_address].timeLock == 0) {
-            status[_address].locked = false;
+        if(status[_address] == 0) {
+            return false;
         }
         //if not first time check the timeLock
         else {
             // solium-disable-next-line security/no-block-members
-            if(block.timestamp >= status[_address].timeLock) {
-                status[_address].locked = false;
+            if(block.timestamp >= status[_address]) {
+                return false;
             }
             else {
-                status[_address].locked = true;
+                return true;
             }
         }
     }
@@ -179,7 +177,7 @@ contract Faucet is Ownable {
     function updateStatus(address _address, uint256 _timelock)
       internal
     {   // solium-disable-next-line security/no-block-members
-        status[_address].timeLock = block.timestamp + _timelock;
+        status[_address] = block.timestamp + _timelock;
     }
 
 }

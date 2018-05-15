@@ -10,18 +10,19 @@
 ## AVO Faucet
 Smart contract faucet for [Avocado Network](https://github.com/AvocadoNetwork).
 
-Rinkeby Instance [here](https://rinkeby.etherscan.io/address/0x25cfe00c37bb089ceb87ee2d6665ac2a39168979).
+Rinkeby Instance [here](https://rinkeby.etherscan.io/address/0x8c2451d9bebc7c18ca89fdf7db8692d51605c04b).
 
-Gist available [here](https://gist.github.com/NFhbar/e1e248fc96aa5c41033c42150c6d7361).
+Gist available [here](https://gist.github.com/NFhbar/e2112d0d909881e5c82b2c3d6a1c5e75).
 
-The Faucet contract allows senders to send and receive [AVO tokens](https://rinkeby.etherscan.io/address/0x0c8184c21a51cdb7df9e5dc415a6a54b3a39c991).
+The Faucet contract allows senders to send and receive ERC20Basic tokens.
 
-The ```constructor``` sets the initial token instance and turns the faucet on:
+The ```constructor``` sets the initial token instance, faucet name, and turns the faucet on:
 ```javascript
-constructor(address _avoInstance)
+constructor(address _tokenInstance, string _faucetName)
   public
 {
-    avoInstance = AvocadoToken(_avoInstance);
+    tokenInstance = ERC20Basic(_tokenInstance);
+    faucetName = _faucetName;
     faucetStatus = true;
 
     emit FaucetOn(faucetStatus);
@@ -30,69 +31,72 @@ constructor(address _avoInstance)
 
 The Faucet can only be turned on and off by the ```owner``` of the contract as set by [Ownable.sol](./contracts/ownership/Ownable.sol).
 
-### Drip AVO
-The Faucet has 3 methods for dripping 1000, 2000, or 5000 AVO tokens to senders:
+### Drip Tokens
+The Faucet has 3 methods for dripping 1000, 2000, or 5000 tokens to senders:
 ```javascript
-function drip1000AVO()
-function drip2000AVO()
-function drip5000AVO()
+function drip1000Token()
+function drip2000Token()
+function drip5000Token()
 ```
 The time lock period for each function is 1 hour, 2 hours, and 5 hours respectively.
 
 All functions follow the same logic:
 ```javascript
-function drip1000AVO()
+function drip1000Token()
   public
   faucetOn()
 {
-    checkStatus(msg.sender);
-    if(status[msg.sender].locked) {
+    if(checkStatus(msg.sender)) {
         revert();
     }
-    avoInstance.transfer(msg.sender, oneKAVO);
+    tokenInstance.transfer(msg.sender, oneKToken);
     updateStatus(msg.sender, oneHours);
 
-    emit OneKAVOSent(msg.sender);
+    emit OneKTokenSent(msg.sender);
 }
 ```
 First the function requires the faucet is turned on. Then the status of the sender is checked for lock or unlocked depending on their previous state:
 ```javascript
 function checkStatus(address _address)
   internal
+  view
+  returns (bool)
 {
     //check if first time address is requesting
-    if(status[_address].timeLock == 0) {
-        status[_address].locked = false;
+    if(status[_address] == 0) {
+        return false;
     }
     //if not first time check the timeLock
     else {
         // solium-disable-next-line security/no-block-members
-        if(block.timestamp >= status[_address].timeLock) {
-            status[_address].locked = false;
+        if(block.timestamp >= status[_address]) {
+            return false;
         }
         else {
-            status[_address].locked = true;
+            return true;
         }
     }
 }
 ```
 If the status is locked the drip function reverts:
 ```javascript
-if(status[msg.sender].locked) {
+if(checkStatus(msg.sender)) {
     revert();
 }
 ```
-Otherwise the sender receives AVO tokens:
+Otherwise the sender receives tokens:
 ```javascript
-avoInstance.transfer(msg.sender, oneKAVO);
+tokenInstance.transfer(msg.sender, oneKToken);
 updateStatus(msg.sender, oneHours);
+
+emit OneKTokenSent(msg.sender);
 ```
 The status of the sender is then updated with the corresponding locked time period using ```block.timestamp```:
 ```javascript
 function updateStatus(address _address, uint256 _timelock)
   internal
 {   // solium-disable-next-line security/no-block-members
-    status[_address].timeLock = block.timestamp + _timelock;
+    status[_address] = block.timestamp + _timelock;
 }
 ```
 
@@ -100,7 +104,7 @@ function updateStatus(address _address, uint256 _timelock)
 ### ethpm
 Install as [ethpm](https://www.ethpm.com/registry/packages/48):
 ```
-$ truffle install avo-token-faucet@1.0.1
+$ truffle install avo-token-faucet@2.0.0
 ```
 
 ### Clone

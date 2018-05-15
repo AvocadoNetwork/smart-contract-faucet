@@ -1,6 +1,6 @@
 {
   "name": "avo-token-faucet",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "faucet contract for Avocado Network",
   "main": "truffle.js",
   "directories": {

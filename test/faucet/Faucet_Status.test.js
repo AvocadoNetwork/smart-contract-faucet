@@ -10,6 +10,7 @@ contract('Faucet Contract - Faucet Status', accounts => {
     let confirm
     let faucet_balance
     let eventEmitted
+    const faucetName = 'AVOFaucet'
     const owner = accounts[1]
     const nonOwner = accounts[0]
     const amount = 3000000000000000000000
@@ -17,7 +18,7 @@ contract('Faucet Contract - Faucet Status', accounts => {
     beforeEach(async () => {
         AVO = await token.new({from: accounts[1]})
         assert.ok(AVO)
-        faucet = await Faucet.new(AVO.address, {from: owner})
+        faucet = await Faucet.new(AVO.address, faucetName, {from: owner})
         assert.ok(faucet)
     })
 
@@ -33,7 +34,7 @@ contract('Faucet Contract - Faucet Status', accounts => {
         await AVO.transfer(faucet.address, amount, { from: accounts[1] })
         faucet_balance = await AVO.balanceOf.call(faucet.address, { from: accounts[0] })
         assert.equal(faucet_balance.toNumber(), amount)
-        await assertRevert(faucet.drip1000AVO({from: accounts[0]}))
+        await assertRevert(faucet.drip1000Token({from: accounts[0]}))
         //cannot turn faucet off again
         await assertRevert(faucet.turnFaucetOff({from: owner}))
 
