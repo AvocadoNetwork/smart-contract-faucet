@@ -3,7 +3,7 @@
 <div>
 
 [![Build Status](https://travis-ci.org/AvocadoNetwork/smart-contract-faucet.svg?branch=master)](https://travis-ci.org/AvocadoNetwork/smart-contract-faucet)
-[![Coverage Status](https://coveralls.io/repos/github/NFhbar/smart-contract-faucet/badge.svg?branch=master)](https://coveralls.io/github/NFhbar/smart-contract-faucet?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/AvocadoNetwork/smart-contract-faucet/badge.svg?branch=master)](https://coveralls.io/github/AvocadoNetwork/smart-contract-faucet?branch=master)
 
 </div>
 
